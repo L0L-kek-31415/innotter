@@ -8,12 +8,10 @@ RUN apt-get update \
 
 WORKDIR /usr/src/app/
 
-COPY Pipfile* /usr/src/app/
 RUN pip install pipenv && pipenv install --deploy --system --ignore-pipfile
-RUN pip install psycopg2
+COPY Pipfile Pipfile.lock ./
 
 COPY . /usr/src/app
-COPY ./entrypoint.sh ./
 
 RUN ["chmod", "+x", "./entrypoint.sh"]
 ENTRYPOINT ["./entrypoint.sh"]
