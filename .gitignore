@@ -2,3 +2,5 @@
 
 /.env
 /data/
+/main/migrations/
+/user/migrations/

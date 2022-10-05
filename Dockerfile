@@ -3,15 +3,18 @@ FROM python:3.10
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+WORKDIR /usr/src/app/
+
+RUN pip install pipenv
+
 RUN apt-get update \
     && apt-get install -yyq netcat
 
-WORKDIR /usr/src/app/
 
-RUN pip install pipenv && pipenv install --deploy --system --ignore-pipfile
 COPY Pipfile Pipfile.lock ./
+RUN pipenv install --deploy --system --ignore-pipfile
 
-COPY . /usr/src/app
+COPY . .
 
 RUN ["chmod", "+x", "./entrypoint.sh"]
 ENTRYPOINT ["./entrypoint.sh"]
