@@ -10,7 +10,15 @@ from main.serializers import (PostSerializer, PageSerializer, TagSerializer,
                               PostDetailSerializer, PageDetailSerializer)
 
 
-class PostViewSet(mixins.CreateModelMixin,
+class SerializersMixin:
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
+
+class PostViewSet(SerializersMixin,
+                   mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
@@ -19,11 +27,12 @@ class PostViewSet(mixins.CreateModelMixin,
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
     serializer_action_classes = {
-        'list': PostSerializer
+        'list': PostSerializer,
     }
 
 
-class PageViewSet(mixins.CreateModelMixin,
+class PageViewSet(SerializersMixin,
+                   mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
@@ -35,9 +44,11 @@ class PageViewSet(mixins.CreateModelMixin,
     )
     serializer_class = PageDetailSerializer
     serializer_action_classes = {
-        'list': PageSerializer
+        'list': PageSerializer,
     }
     permission_classes = (IsOwnerOrReadOnly,)
+
+
 
 
 class TagViewSet(mixins.CreateModelMixin,
