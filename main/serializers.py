@@ -17,8 +17,6 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 
 class PageSerializer(serializers.ModelSerializer):
-    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
     class Meta:
         model = Page
         fields = ("name", "description", "tags", "image")
@@ -37,4 +35,4 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ("name",)
+        fields = ("id", "name")

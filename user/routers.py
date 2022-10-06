@@ -3,4 +3,4 @@ from user.views import UserViewSet
 
 
 router = routers.SimpleRouter()
-router.register(r'', UserViewSet)
+router.register(r'users', UserViewSet)
