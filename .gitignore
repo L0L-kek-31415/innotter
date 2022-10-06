@@ -4,3 +4,4 @@
 /data/
 /main/migrations/
 /user/migrations/
+/.env.dev
