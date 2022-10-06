@@ -6,8 +6,13 @@ from django.db.models import Q
 
 from main.models import Post, Page, Tag
 from main.permissions import IsOwnerOrReadOnly
-from main.serializers import (PostSerializer, PageSerializer, TagSerializer,
-                              PostDetailSerializer, PageDetailSerializer)
+from main.serializers import (
+    PostSerializer,
+    PageSerializer,
+    TagSerializer,
+    PostDetailSerializer,
+    PageDetailSerializer,
+)
 
 
 class SerializersMixin:
@@ -17,46 +22,49 @@ class SerializersMixin:
         except (KeyError, AttributeError):
             return super().get_serializer_class()
 
-class PostViewSet(SerializersMixin,
-                   mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
+
+class PostViewSet(
+    SerializersMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
     serializer_action_classes = {
-        'list': PostSerializer,
+        "list": PostSerializer,
     }
 
 
-class PageViewSet(SerializersMixin,
-                   mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
+class PageViewSet(
+    SerializersMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     queryset = Page.objects.filter(
-        Q(unblock_date__lt=datetime.utcnow()) |
-        Q(unblock_date=None)
+        Q(unblock_date__lt=datetime.utcnow()) | Q(unblock_date=None)
     )
     serializer_class = PageDetailSerializer
     serializer_action_classes = {
-        'list': PageSerializer,
+        "list": PageSerializer,
     }
     permission_classes = (IsOwnerOrReadOnly,)
 
 
-
-
-class TagViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
+class TagViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-
