@@ -25,7 +25,7 @@ class Page(models.Model):
     unblock_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.uuid + " " + self.name
+        return f"{self.uuid} {self.name}"
 
 
 class Post(models.Model):
@@ -41,4 +41,4 @@ class Post(models.Model):
         return self.content
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ('-created_at',)
