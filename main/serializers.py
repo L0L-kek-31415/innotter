@@ -6,13 +6,16 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = "__all__"
+        fields = ("page", "content", "reply_to")
+
 
 class PageSerializer(serializers.ModelSerializer):
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Page
         fields = "__all__"
+
 
 class TagSerializer(serializers.ModelSerializer):
 
