@@ -1,6 +1,8 @@
 from rest_framework import routers
-from main.views import PostViewSet, PageViewSet, TagViewSet
 
+from api.v1.pages.views import PageViewSet
+from api.v1.posts.views import PostViewSet
+from api.v1.tags.views import TagViewSet
 
 router = routers.SimpleRouter()
 router.register(r"page", PageViewSet)

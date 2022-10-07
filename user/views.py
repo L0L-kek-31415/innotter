@@ -1,16 +1,8 @@
 from rest_framework import generics
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-
-from user.models import User
 from user.serializers import UserSerializer, RegisterSerializer
-
-
-class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 
 class RegisterApi(generics.GenericAPIView):
