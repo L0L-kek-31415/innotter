@@ -2,7 +2,7 @@ from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
 from main.models import Tag
-from main.serializers import TagSerializer
+from main.api.v1.serializers.tag import TagSerializer
 
 
 class TagViewSet(

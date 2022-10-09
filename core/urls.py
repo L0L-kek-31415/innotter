@@ -5,8 +5,7 @@ from user.routers import router as user_router
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework_swagger.views import get_swagger_view
 
-
-from user.views import RegisterApi
+from user.api.v1.views.user import RegisterApi
 
 
 schema_view = get_swagger_view(title="Pastebin API")
@@ -14,7 +13,6 @@ schema_view = get_swagger_view(title="Pastebin API")
 urlpatterns = [
     path("lol/", schema_view),
     path("admin/", admin.site.urls),
-    path("auth", include("rest_framework.urls", namespace="rest_framework")),
     path("user/", include(user_router.urls)),
     path(
         "token/",

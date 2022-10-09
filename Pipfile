@@ -9,8 +9,9 @@ python-decouple = "*"
 psycopg2-binary = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
-django-allauth = "*"
 black = "*"
+django-rest-swagger = "*"
+django-filter = "*"
 
 [dev-packages]
 

@@ -1,24 +1,11 @@
 from rest_framework import serializers
-from main.models import Post, Page, Tag
-
-
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ("content",)
-
-
-class PostDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ("page", "content", "reply_to")
-        read_only_field = fields
+from main.models import Page
 
 
 class PageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
-        fields = ("name", "description", "tags", "image")
+        fields = ("id", "name", "owner", "description", "tags", "image", "is_private")
 
 
 class PageDetailSerializer(serializers.ModelSerializer):
@@ -35,11 +22,12 @@ class PageDetailSerializer(serializers.ModelSerializer):
             "followers",
             "image",
             "follow_requests",
+            "is_private",
         )
         read_only_field = fields
 
 
-class TagSerializer(serializers.ModelSerializer):
+class PageFollowersSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Tag
-        fields = ("id", "name")
+        model = Page
+        fields = ("follow_requests", "followers")

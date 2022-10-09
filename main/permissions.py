@@ -1,13 +1,15 @@
 from rest_framework import permissions
+from django.utils import timezone
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class IsPageBlocked(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return obj.owner == request.user
+        if obj.unblock_date:
+            if obj.unblock_date >= timezone.now():
+                return False
+        return True
 
 
-class IsOwner(permissions.BasePermission):
+class IsPagePrivate(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user
+        return obj.isPprivate is False
