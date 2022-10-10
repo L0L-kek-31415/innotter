@@ -1,12 +1,11 @@
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import generics, mixins
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 
 from user.models import User
-from user.api.v1.serivlizers.user import UserSerializer
-from user.api.v1.serivlizers.user import UserSerializer, RegisterSerializer
+from api.v1.users.serializers import UserSerializer, RegisterSerializer
 
 
 class RegisterApi(generics.GenericAPIView):
@@ -34,7 +33,7 @@ class UserViewSet(ModelViewSet):
 
 class SearchUserViewSet(GenericViewSet, mixins.ListModelMixin):
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = (AllowAny,)
     queryset = User.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("username", "email")

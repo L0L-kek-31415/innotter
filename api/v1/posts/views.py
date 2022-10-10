@@ -1,10 +1,10 @@
 from rest_framework import mixins
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
 from main.models import Post
-from main.api.v1.serializers.post import PostDetailSerializer, PostSerializer
-from main.api.v1.views.base import SerializersMixin
+from api.v1.posts.serializers import PostDetailSerializer, PostSerializer
+from api.v1.pages.base import SerializersMixin
 from user.permissions import IsModer
 
 

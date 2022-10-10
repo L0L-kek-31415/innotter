@@ -23,6 +23,7 @@ class PageDetailSerializer(serializers.ModelSerializer):
             "image",
             "follow_requests",
             "is_private",
+            "unblock_date",
         )
         read_only_field = fields
 

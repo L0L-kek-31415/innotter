@@ -9,11 +9,11 @@ python-decouple = "*"
 psycopg2-binary = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
-black = "*"
-django-rest-swagger = "*"
 django-filter = "*"
 
 [dev-packages]
+black = "*"
+django-rest-swagger = "*"
 
 [requires]
 python_version = "3.10"
