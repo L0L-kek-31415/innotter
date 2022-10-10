@@ -1,0 +1,22 @@
+version: '3.10'
+
+services:
+  web:
+    build: .
+    env_file:
+      - .env.dev
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - 8000:8000
+    restart: always
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data/
+    ports:
+      - 5433:5432
+    env_file:
+      - .env
