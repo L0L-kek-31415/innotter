@@ -32,3 +32,9 @@ class PageFollowersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = ("follow_requests", "followers")
+
+
+class PageUnblockDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ("unblock_date",)

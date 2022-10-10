@@ -1,4 +1,5 @@
 from django.urls import path, include
+from django.contrib import admin
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework_swagger.views import get_swagger_view
 from rest_framework import routers
@@ -20,6 +21,7 @@ router.register(r"users", UserViewSet)
 router.register(r"search/user", SearchUserViewSet)
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path("register/", RegisterApi.as_view()),
     path("swagger/", schema_view),
     path(

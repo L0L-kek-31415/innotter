@@ -1,6 +1,5 @@
 class SerializersMixin:
     def get_serializer_class(self):
-        try:
-            return self.serializer_action_classes[self.action]
-        except (KeyError, AttributeError):
-            return super().get_serializer_class()
+        return self.serializer_action_classes.get(
+            self.action, super().get_serializer_class()
+        )

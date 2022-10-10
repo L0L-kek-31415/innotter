@@ -17,12 +17,14 @@ class Page(models.Model):
     owner = models.ForeignKey(
         "user.User", on_delete=models.CASCADE, related_name="pages"
     )
-    followers = models.ManyToManyField("user.User", related_name="follows")
+    followers = models.ManyToManyField("user.User", related_name="follows", blank=True)
 
-    image = models.URLField(null=True, blank=True)
+    image = models.CharField(max_length=255, null=True, blank=True)
 
     is_private = models.BooleanField(default=False)
-    follow_requests = models.ManyToManyField("user.User", related_name="requests")
+    follow_requests = models.ManyToManyField(
+        "user.User", related_name="requests", blank=True
+    )
 
     unblock_date = models.DateTimeField(null=True, blank=True)
 
