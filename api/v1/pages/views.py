@@ -58,7 +58,7 @@ class PageViewSet(
 
     def check_permissions(self, request):
         try:
-            handler = self.action.lower()
+            handler = getattr(self, self.action.lower())
         except AttributeError:
             handler = None
 
