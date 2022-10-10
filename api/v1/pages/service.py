@@ -1,4 +1,4 @@
-class PageActions:
+class PageService:
     def __init__(self, page, user=None, unblock_date=None):
         self.user = user
         self.page = page

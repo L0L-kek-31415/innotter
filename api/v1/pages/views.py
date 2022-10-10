@@ -16,7 +16,7 @@ from api.v1.pages.serializers import (
     PageFollowersSerializer,
     PageUnblockDateSerializer,
 )
-from api.v1.pages.service import PageActions
+from api.v1.pages.service import PageService
 from api.v1.pages.base import SerializersMixin
 
 
@@ -69,7 +69,7 @@ class PageViewSet(
         self.check_permissions(request)
         self.check_object_permissions(request, self.get_object())
         return Response(
-            {"message": PageActions(page, request.user).start_follow()},
+            {"message": PageService(page, request.user).start_follow()},
             status.HTTP_200_OK,
         )
 
@@ -79,7 +79,7 @@ class PageViewSet(
         self.check_permissions(request)
         self.check_object_permissions(request, self.get_object())
         return Response(
-            {"message": PageActions(page, request.user).stop_follow()},
+            {"message": PageService(page, request.user).stop_follow()},
             status.HTTP_200_OK,
         )
 
@@ -92,7 +92,7 @@ class PageViewSet(
         serializer.is_valid()
         new_date = serializer.data["unblock_date"]
         return Response(
-            {"message": PageActions(page=page, unblock_date=new_date).block_page()}
+            {"message": PageService(page=page, unblock_date=new_date).block_page()}
         )
 
 

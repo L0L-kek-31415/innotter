@@ -8,7 +8,7 @@ from user.models import User
 from api.v1.users.serializers import UserSerializer, RegisterSerializer
 
 
-class RegisterApi(generics.GenericAPIView):
+class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (AllowAny,)
 
@@ -18,9 +18,7 @@ class RegisterApi(generics.GenericAPIView):
         user = serializer.save()
         return Response(
             {
-                "user": UserSerializer(
-                    user, context=self.get_serializer_context()
-                ).data,
+                "user": serializer.data,
                 "message": "User Created Successfully. Now perform Login to get your token",
             }
         )

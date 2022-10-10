@@ -10,10 +10,10 @@ psycopg2-binary = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 django-filter = "*"
+django-rest-swagger = "*"
 
 [dev-packages]
 black = "*"
-django-rest-swagger = "*"
 
 [requires]
 python_version = "3.10"

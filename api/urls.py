@@ -4,14 +4,13 @@ from rest_framework_simplejwt import views as jwt_views
 from rest_framework_swagger.views import get_swagger_view
 
 
-from api.v1.users.views import RegisterApi
+from api.v1.users.views import RegisterView
 
 
-schema_view = get_swagger_view(title="Pastebin API")
+schema_view = get_swagger_view(title="Innotter")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("register/", RegisterApi.as_view()),
     path("swagger/", schema_view),
     path(
         "token/",
