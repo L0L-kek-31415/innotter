@@ -41,16 +41,18 @@ class PageViewSet(
     permission_classes = []
     permission_classes_per_method = {
         "list": (AllowAny,),
+        "options": (AllowAny,),
+        "retrieve": (AllowAny,),
         "update": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
-        # "create": [IsAuthenticated],
+        "create": [IsAuthenticated],
         "follow": (IsAuthenticated, IsPageNotBlocked),
         "unfollow": (IsAuthenticated, IsPageNotBlocked),
         "block": (IsAuthenticated, IsModer | IsAdminUser),
     }
 
     def check_permissions(self, request):
-        handler = getattr(self, self.action.lower(), None)
+        handler = getattr(self, request.method.lower(), None)
         if (
             handler
             and self.permission_classes_per_method

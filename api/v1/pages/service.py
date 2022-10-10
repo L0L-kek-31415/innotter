@@ -26,7 +26,7 @@ class PageActions:
     def block_page(self):
         self.page.unblock_date = self.unblock_date
         self.page.save()
-        return f"Unblock date - {self.page.unblock_date} "
+        return f"Unblock date - {self.page.unblock_date}"
 
     def is_user_follower(self):
         return self.page.followers.filter(id=self.user.id).exists()
