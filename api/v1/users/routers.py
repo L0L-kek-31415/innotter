@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework import routers
 
 from api.v1.pages.views import PageViewSet, SearchPageViewSet
@@ -15,6 +15,7 @@ router.register(r"search/page", SearchPageViewSet)
 router.register(r"users", UserViewSet)
 router.register(r"search/user", SearchUserViewSet)
 
-urlpatterns = router.urls + [
+urlpatterns = [
     path("register/", RegisterView.as_view()),
+    path("", include(router.urls)),
 ]

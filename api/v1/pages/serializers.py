@@ -38,3 +38,9 @@ class PageUnblockDateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = ("unblock_date",)
+
+
+class PageUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ("name", "uuid", "description", "tags", "is_private")
