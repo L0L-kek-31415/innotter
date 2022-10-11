@@ -11,5 +11,6 @@ class IsPageNotBlocked(permissions.BasePermission):
 
 
 class IsPageNotPrivate(permissions.BasePermission):
+
     def has_object_permission(self, request, view, obj):
         return obj.is_private is False

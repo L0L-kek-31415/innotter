@@ -51,18 +51,6 @@ class PageViewSet(
         "block": (IsAuthenticated, IsModer | IsAdminUser),
     }
 
-    def check_permissions(self, request):
-        handler = getattr(self, request.method.lower(), None)
-        if (
-            handler
-            and self.permission_classes_per_method
-            and self.permission_classes_per_method.get(handler.__name__)
-        ):
-            self.permission_classes = self.permission_classes_per_method.get(
-                handler.__name__
-            )
-        super().check_permissions(request)
-
     @action(detail=True, methods=("post",))
     def follow(self, request, pk=None):
         page = self.get_object()
