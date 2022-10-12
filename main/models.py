@@ -1,6 +1,4 @@
 from django.db import models
-from django.db.models import signals
-from django.dispatch import receiver
 
 
 class Tag(models.Model):
@@ -42,9 +40,7 @@ class Post(models.Model):
         "main.Post", on_delete=models.SET_NULL, null=True, related_name="replies"
     )
 
-    like = models.ManyToManyField(
-        "user.User", related_name="like", blank=True
-    )
+    like = models.ManyToManyField("user.User", related_name="like", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -6,9 +6,14 @@ class PostService:
         self.post = post
         self.user = user
 
+    def add_reply(self, post_id):
+        post = Post.objects.get(id=post_id)
+        post.reply_to = self.post
+        post.save()
+
     @staticmethod
     def check_page_owner(page_id, user_id):
-        page_owner_id = Page.objects.get(id=page_id).owner.id
+        page_owner_id = Page.objects.get(id=page_id.id).owner.id
         if user_id == page_owner_id:
             return True
         return False

@@ -18,3 +18,19 @@ class PostDetailSerializer(serializers.ModelSerializer):
         # fields = ("__all__")
         fields = ("id", "page", "content", "reply_to", "like", "like_count")
         read_only_field = fields
+
+
+class PrivatePostSerializer(serializers.ModelSerializer):
+    like_count = serializers.IntegerField()
+
+    class Meta:
+        model = Post
+        fields = ("id", "like_count")
+        read_only_field = fields
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ("id", "page", "content")
+        read_only_field = fields

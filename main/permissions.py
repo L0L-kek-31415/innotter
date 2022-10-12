@@ -1,6 +1,8 @@
 from rest_framework import permissions
 from django.utils import timezone
 
+from main.models import Page
+
 
 class IsPageNotBlocked(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -11,6 +13,5 @@ class IsPageNotBlocked(permissions.BasePermission):
 
 
 class IsPageNotPrivate(permissions.BasePermission):
-
     def has_object_permission(self, request, view, obj):
         return obj.is_private is False
