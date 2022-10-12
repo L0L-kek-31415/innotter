@@ -12,6 +12,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 class PostDetailSerializer(serializers.ModelSerializer):
     like_count = serializers.IntegerField()
+
     class Meta:
         model = Post
         # fields = ("__all__")

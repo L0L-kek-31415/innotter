@@ -1,4 +1,4 @@
-from main.models import Page
+from main.models import Page, Post
 
 
 class PostService:

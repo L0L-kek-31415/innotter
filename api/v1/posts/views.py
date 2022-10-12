@@ -59,3 +59,13 @@ class PostViewSet(
     def like(self, request, pk=None):
         post = self.get_object()
         return Response(PostService(post, request.user).add_like(), status.HTTP_202_ACCEPTED)
+
+    @action(detail=False, methods=("get",),
+            permission_classes=(IsAuthenticated,),
+            url_path="mylikes")
+    def my_likes(self, request):
+        queryset = Post.objects.filter(like=request.user).values()
+        serializer = PostSerializer(data=queryset)
+        serializer.is_valid()
+        return Response({"Posts": queryset}, status.HTTP_200_OK)
+
