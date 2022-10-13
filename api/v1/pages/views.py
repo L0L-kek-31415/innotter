@@ -29,7 +29,7 @@ class PageViewSet(
     mixins.ListModelMixin,
     GenericViewSet,
 ):
-    queryset = Page.objects.filter(
+    queryset = Page.objects.prefetch_related("follow_requests").filter(
         Q(unblock_date__lt=datetime.utcnow()) | Q(unblock_date=None)
     )
     serializer_class = PageDetailSerializer
@@ -67,8 +67,7 @@ class PageViewSet(
         page = self.get_object()
         serializer = PageFollowersSerializer(data=request.data)
         serializer.is_valid()
-
-        return Response({"message": PageService(page).accept_follow_request(serializer.data["follow_requests"])}, status.HTTP_202_ACCEPTED)
+        return Response(PageService(page).accept_follow_request(serializer.data["follow_requests"]))
 
     @action(detail=True, methods=("post",),
             url_path="request/deny",
@@ -77,37 +76,29 @@ class PageViewSet(
         page = self.get_object()
         serializer = PageFollowersSerializer(data=request.data)
         serializer.is_valid()
-
-        return Response({"message": PageService(page).deny_follow_request(serializer.data["follow_requests"])},
-                        status.HTTP_202_ACCEPTED)
+        return Response(PageService(page).deny_follow_request(serializer.data["follow_requests"]))
 
     @action(detail=True, methods=("post",), url_path="follow",
             permission_classes=(IsAuthenticated, IsPageNotBlocked))
     def follow(self, request, pk=None):
-        self.check_permissions(request)
-        self.check_object_permissions(request, self.get_object())
         page = self.get_object()
         return Response(
-            {"message": PageService(page, request.user).start_follow()},
+            {"message": PageService(page, user=request.user, user_id=request.user.id).start_follow()},
             status.HTTP_200_OK,
         )
 
     @action(detail=True, methods=("post",), url_path="unfollow",
             permission_classes=(IsAuthenticated,))
     def unfollow(self, request, pk=None):
-        self.check_permissions(request)
-        self.check_object_permissions(request, self.get_object())
         page = self.get_object()
         return Response(
-            {"message": PageService(page, request.user).stop_follow()},
+            {"message": PageService(page, user=request.user, user_id=request.user.id).stop_follow()},
             status.HTTP_200_OK,
         )
 
     @action(detail=True, methods=("post",), url_path="block",
             permission_classes=(IsAuthenticated, IsModer | IsAdminUser))
     def block(self, request, pk=None):
-        self.check_permissions(request)
-        self.check_object_permissions(request, self.get_object())
         page = self.get_object()
         serializer = PageUnblockDateSerializer(data=request.data)
         serializer.is_valid()
@@ -120,5 +111,7 @@ class PageViewSet(
 class SearchPageViewSet(GenericViewSet, mixins.ListModelMixin):
     serializer_class = PageSerializer
     permission_classes = (AllowAny,)
-    queryset = Page.objects.all()
+    queryset = Page.objects.filter(
+        Q(unblock_date__lt=datetime.utcnow()) | Q(unblock_date=None)
+    )
     filterset_fields = ("uuid", "tags", "name")

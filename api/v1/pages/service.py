@@ -1,47 +1,33 @@
+from rest_framework import status
+
 from user.models import User
 
 
 class PageService:
-    def __init__(self, page, user=None, unblock_date=None):
+    def __init__(self, page, user=None, unblock_date=None, user_id=None):
         self.user = user
         self.page = page
         self.unblock_date = unblock_date
+        self.user_id = user_id
 
     def deny_follow_request(self, users):
-        message = []
-        for id_user in users:
-            try:
-                user = User.objects.get(id=id_user)
-            except User.DoesNotExist:
-                message.append(f"User {id_user} does not exist")
-            else:
-                if self.is_user_send_follow_request(user.id):
-                    self.page.follow_requests.remove(user)
-                    message.append(f"User {user.id} was removed from follower requests")
-                elif self.is_user_follower(user.id):
-                    self.page.followers.remove(user)
-                    message.append(f"User {user.id} was removed from followers")
-                else:
-                    message.append(f"User {user.id} does not send follow request")
-        return message
+        follow_requests = list(self.page._prefetched_objects_cache.get("follow_requests"))
+        follow_request = [item for item in follow_requests if item.id in users]
+        for i in follow_request:
+            self.page.follow_requests.remove(i)
+        if follow_request:
+            return status.HTTP_200_OK
+        return status.HTTP_400_BAD_REQUEST
 
     def accept_follow_request(self, users):
-        message = []
-        for id_user in users:
-            try:
-                user = User.objects.get(id=id_user)
-            except User.DoesNotExist:
-                message.append(f"User {id_user} does not exist")
-            else:
-                if self.is_user_send_follow_request(user.id):
-                    self.page.follow_requests.remove(user)
-                    self.page.followers.add(user)
-                    message.append(f"User {user.id} was added to followers")
-                elif self.is_user_follower(user.id):
-                    message.append(f"User {user.id} is already in your followers")
-                else:
-                    message.append(f"User {user.id} does not send follow request")
-        return message
+        follow_requests = list(self.page._prefetched_objects_cache.get("follow_requests"))
+        follow_request = [item for item in follow_requests if item.id in users]
+        for i in follow_request:
+            self.page.follow_requests.remove(i)
+            self.page.followers.add(i)
+        if follow_request:
+            return status.HTTP_200_OK
+        return status.HTTP_400_BAD_REQUEST
 
     def start_follow(self):
         if self.is_user_follower() or self.is_user_send_follow_request():
@@ -69,13 +55,9 @@ class PageService:
         self.page.save()
         return f"Unblock date - {self.page.unblock_date}"
 
-    def is_user_follower(self, user_id=None):
-        if user_id is None:
-            user_id = self.user.id
-        return self.page.followers.filter(id=user_id).exists()
+    def is_user_follower(self):
+        return self.page.followers.filter(id=self.user_id).exists()
 
-    def is_user_send_follow_request(self, user_id=None):
-        if user_id is None:
-            user_id = self.user.id
-        return self.page.follow_requests.filter(id=user_id).exists()
+    def is_user_send_follow_request(self):
+        return self.page.follow_requests.filter(id=self.user_id).exists()
 
