@@ -19,4 +19,6 @@ class IsPageNotPrivate(permissions.BasePermission):
 
 class IsPageOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user
+        if isinstance(obj, Page):
+            return obj.owner == request.user
+        return True

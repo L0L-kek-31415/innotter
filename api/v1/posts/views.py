@@ -35,6 +35,7 @@ class PostViewSet(
         "create": (IsAuthenticated, IsPageOwner),
         "update": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
+        "reply_to": (IsAuthenticated, IsPageOwner)
     }
     queryset = (
         Post.objects.select_related("page")
@@ -113,17 +114,14 @@ class PostViewSet(
     @action(
         detail=True,
         methods=("post",),
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, ),
         url_path="reply",
     )
     def reply_to(self, request, pk=None):
         post = self.get_object()
         serializer = PostCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if PostService.check_page_owner(
-            serializer.validated_data.get("page"), request.user.id
-        ):
-            serializer.save()
-            PostService(post).add_reply(serializer.data["id"])
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response("You can use only your own pages")
+        self.check_object_permissions(request=request, obj=serializer.validated_data.get("page"))
+        serializer.save()
+        PostService(post).add_reply(serializer.data["id"])
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

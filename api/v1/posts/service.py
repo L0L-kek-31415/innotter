@@ -11,11 +11,6 @@ class PostService:
         post.reply_to = self.post
         post.save()
 
-    @staticmethod
-    def check_page_owner(page_id, user_id):
-        page_owner_id = Page.objects.get(id=page_id.id).owner.id
-        return user_id == page_owner_id
-
     def add_like(self):
         if self.is_like_from_user_exist():
             return "This post already has your Like"
