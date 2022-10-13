@@ -1,7 +1,5 @@
 from rest_framework import status
 
-from user.models import User
-
 
 class PageService:
     def __init__(self, page, user=None, unblock_date=None, user_id=None):
@@ -11,21 +9,17 @@ class PageService:
         self.user_id = user_id
 
     def deny_follow_request(self, users):
-        follow_requests = list(self.page._prefetched_objects_cache.get("follow_requests"))
-        follow_request = [item for item in follow_requests if item.id in users]
-        for i in follow_request:
-            self.page.follow_requests.remove(i)
+        follow_request = list(self.page.follow_requests.filter(id__in=users))
         if follow_request:
+            self.page.follow_requests.remove(*follow_request)
             return status.HTTP_200_OK
         return status.HTTP_400_BAD_REQUEST
 
     def accept_follow_request(self, users):
-        follow_requests = list(self.page._prefetched_objects_cache.get("follow_requests"))
-        follow_request = [item for item in follow_requests if item.id in users]
-        for i in follow_request:
-            self.page.follow_requests.remove(i)
-            self.page.followers.add(i)
+        follow_request = list(self.page.follow_requests.filter(id__in=users))
         if follow_request:
+            self.page.follow_requests.remove(*follow_request)
+            self.page.followers.add(*follow_request)
             return status.HTTP_200_OK
         return status.HTTP_400_BAD_REQUEST
 
@@ -60,4 +54,3 @@ class PageService:
 
     def is_user_send_follow_request(self):
         return self.page.follow_requests.filter(id=self.user_id).exists()
-

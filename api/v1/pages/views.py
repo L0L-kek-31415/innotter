@@ -59,49 +59,79 @@ class PageViewSet(
             )
         super().check_permissions(request)
 
-    @action(detail=True,
-            methods=("post",),
-            url_path="request/accept",
-            permission_classes=(IsAuthenticated, IsModer | IsAdminUser | IsOwner))
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="request/accept",
+        permission_classes=(IsAuthenticated, IsModer | IsAdminUser | IsOwner),
+    )
     def accept_follow_request(self, request, pk=None):
         page = self.get_object()
+        print(page.__dict__)
         serializer = PageFollowersSerializer(data=request.data)
-        serializer.is_valid()
-        return Response(PageService(page).accept_follow_request(serializer.data["follow_requests"]))
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            PageService(page).accept_follow_request(serializer.data["follow_requests"])
+        )
 
-    @action(detail=True, methods=("post",),
-            url_path="request/deny",
-            permission_classes=(IsAuthenticated, IsModer | IsAdminUser | IsOwner))
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="request/deny",
+        permission_classes=(IsAuthenticated, IsModer | IsAdminUser | IsOwner),
+    )
     def deny_follow_request(self, request, pk=None):
         page = self.get_object()
         serializer = PageFollowersSerializer(data=request.data)
-        serializer.is_valid()
-        return Response(PageService(page).deny_follow_request(serializer.data["follow_requests"]))
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            PageService(page).deny_follow_request(serializer.data["follow_requests"])
+        )
 
-    @action(detail=True, methods=("post",), url_path="follow",
-            permission_classes=(IsAuthenticated, IsPageNotBlocked))
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="follow",
+        permission_classes=(IsAuthenticated, IsPageNotBlocked),
+    )
     def follow(self, request, pk=None):
         page = self.get_object()
         return Response(
-            {"message": PageService(page, user=request.user, user_id=request.user.id).start_follow()},
+            {
+                "message": PageService(
+                    page, user=request.user, user_id=request.user.id
+                ).start_follow()
+            },
             status.HTTP_200_OK,
         )
 
-    @action(detail=True, methods=("post",), url_path="unfollow",
-            permission_classes=(IsAuthenticated,))
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="unfollow",
+        permission_classes=(IsAuthenticated,),
+    )
     def unfollow(self, request, pk=None):
         page = self.get_object()
         return Response(
-            {"message": PageService(page, user=request.user, user_id=request.user.id).stop_follow()},
+            {
+                "message": PageService(
+                    page, user=request.user, user_id=request.user.id
+                ).stop_follow()
+            },
             status.HTTP_200_OK,
         )
 
-    @action(detail=True, methods=("post",), url_path="block",
-            permission_classes=(IsAuthenticated, IsModer | IsAdminUser))
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="block",
+        permission_classes=(IsAuthenticated, IsModer | IsAdminUser),
+    )
     def block(self, request, pk=None):
         page = self.get_object()
         serializer = PageUnblockDateSerializer(data=request.data)
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         new_date = serializer.data["unblock_date"]
         return Response(
             {"message": PageService(page=page, unblock_date=new_date).block_page()}
