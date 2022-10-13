@@ -16,6 +16,7 @@ from api.v1.posts.serializers import (
 from api.v1.pages.base import SerializersMixin
 from user.permissions import IsModer, IsOwner
 from api.v1.posts.service import PostService
+from main.permissions import IsPageOwner
 
 
 class PostViewSet(
@@ -31,12 +32,13 @@ class PostViewSet(
     permission_classes_per_method = {
         "list": (AllowAny,),
         "retrieve": (AllowAny,),
-        "create": (IsAuthenticated,),
+        "create": (IsAuthenticated, IsPageOwner),
         "update": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
     }
     queryset = (
-        Post.objects.filter(page__owner__is_blocked=False)
+        Post.objects.select_related("page")
+        .filter(page__owner__is_blocked=False)
         .filter(
             Q(page__unblock_date__lt=datetime.utcnow())
             | Q(page__unblock_date__isnull=True)
@@ -49,22 +51,18 @@ class PostViewSet(
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = PostDetailSerializer(instance)
-        if instance.page.is_private:
-            if request.user in instance.page.followers.all():
-                serializer = PostDetailSerializer(instance)
-            else:
-                serializer = PrivatePostSerializer(instance)
+        if request.user in instance.page.followers.all():
+            serializer = PostDetailSerializer(instance)
+        elif instance.page.is_private:
+            serializer = PrivatePostSerializer(instance)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serializer = PostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if PostService.check_page_owner(
-            serializer.validated_data.get("page"), request.user.id
-        ):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response("You can use only your own pages")
+        self.check_object_permissions(request=request, obj=serializer.validated_data.get("page"))
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
         detail=True,
