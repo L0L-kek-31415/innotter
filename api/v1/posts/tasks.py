@@ -1,4 +1,5 @@
 from celery import shared_task
+from decouple import config
 from django.core.mail import send_mail
 
 from main.models import Page
@@ -13,6 +14,6 @@ def email_for_followers(page_id):
         send_mail(
             subject="hello",
             message=f"A new post appeared on the {page.name}-page.",
-            from_email="lolkek@gmail.com",
+            from_email=config("EMAIL_HOST_USER"),
             recipient_list=[emails],
         )
