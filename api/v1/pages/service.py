@@ -9,14 +9,14 @@ class PageService:
         self.user_id = user_id
 
     def deny_follow_request(self, users):
-        follow_request = list(self.page.follow_requests.filter(id__in=users))
+        follow_request = self.page.follow_requests.filter(id__in=users)
         if follow_request:
             self.page.follow_requests.remove(*follow_request)
             return status.HTTP_200_OK
         return status.HTTP_400_BAD_REQUEST
 
     def accept_follow_request(self, users):
-        follow_request = list(self.page.follow_requests.filter(id__in=users))
+        follow_request = self.page.follow_requests.filter(id__in=users)
         if follow_request:
             self.page.follow_requests.remove(*follow_request)
             self.page.followers.add(*follow_request)
