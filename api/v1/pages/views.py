@@ -29,7 +29,7 @@ class PageViewSet(
     mixins.ListModelMixin,
     GenericViewSet,
 ):
-    queryset = Page.objects.filter(
+    queryset = Page.objects.prefetch_related("follow_requests").filter(
         Q(unblock_date__lt=datetime.utcnow()) | Q(unblock_date=None)
     )
     serializer_class = PageDetailSerializer
@@ -45,39 +45,82 @@ class PageViewSet(
         "retrieve": (AllowAny,),
         "update": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
-        "create": [IsAuthenticated],
-        "follow": (IsAuthenticated, IsPageNotBlocked),
-        "unfollow": (IsAuthenticated, IsPageNotBlocked),
-        "block": (IsAuthenticated, IsModer | IsAdminUser),
     }
 
-    @action(detail=True, methods=("post",))
+
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="request/accept",
+        permission_classes=(IsAuthenticated, IsModer | IsAdminUser | IsOwner),
+    )
+    def accept_follow_request(self, request, pk=None):
+        page = self.get_object()
+        print(page.__dict__)
+        serializer = PageFollowersSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            PageService(page).accept_follow_request(serializer.data["follow_requests"])
+        )
+
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="request/deny",
+        permission_classes=(IsAuthenticated, IsModer | IsAdminUser | IsOwner),
+    )
+    def deny_follow_request(self, request, pk=None):
+        page = self.get_object()
+        serializer = PageFollowersSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            PageService(page).deny_follow_request(serializer.data["follow_requests"])
+        )
+
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="follow",
+        permission_classes=(IsAuthenticated, IsPageNotBlocked),
+    )
     def follow(self, request, pk=None):
         page = self.get_object()
-        self.check_permissions(request)
-        self.check_object_permissions(request, self.get_object())
         return Response(
-            {"message": PageService(page, request.user).start_follow()},
+            {
+                "message": PageService(
+                    page, user=request.user, user_id=request.user.id
+                ).start_follow()
+            },
             status.HTTP_200_OK,
         )
 
-    @action(detail=True, methods=("post",))
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="unfollow",
+        permission_classes=(IsAuthenticated,),
+    )
     def unfollow(self, request, pk=None):
         page = self.get_object()
-        self.check_permissions(request)
-        self.check_object_permissions(request, self.get_object())
         return Response(
-            {"message": PageService(page, request.user).stop_follow()},
+            {
+                "message": PageService(
+                    page, user=request.user, user_id=request.user.id
+                ).stop_follow()
+            },
             status.HTTP_200_OK,
         )
 
-    @action(detail=True, methods=("post",))
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="block",
+        permission_classes=(IsAuthenticated, IsModer | IsAdminUser),
+    )
     def block(self, request, pk=None):
         page = self.get_object()
-        self.check_permissions(request)
-        self.check_object_permissions(request, self.get_object())
         serializer = PageUnblockDateSerializer(data=request.data)
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         new_date = serializer.data["unblock_date"]
         return Response(
             {"message": PageService(page=page, unblock_date=new_date).block_page()}
@@ -87,5 +130,7 @@ class PageViewSet(
 class SearchPageViewSet(GenericViewSet, mixins.ListModelMixin):
     serializer_class = PageSerializer
     permission_classes = (AllowAny,)
-    queryset = Page.objects.all()
+    queryset = Page.objects.filter(
+        Q(unblock_date__lt=datetime.utcnow()) | Q(unblock_date=None)
+    )
     filterset_fields = ("uuid", "tags", "name")
