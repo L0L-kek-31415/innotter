@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from datetime import datetime
 
+from api.v1.posts.tasks import email_for_followers
 from main.models import Post, Page
 from api.v1.posts.serializers import (
     PostDetailSerializer,
@@ -35,7 +36,7 @@ class PostViewSet(
         "create": (IsAuthenticated, IsPageOwner),
         "update": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
-        "reply_to": (IsAuthenticated, IsPageOwner)
+        "reply_to": (IsAuthenticated, IsPageOwner),
     }
     queryset = (
         Post.objects.select_related("page")
@@ -61,8 +62,10 @@ class PostViewSet(
     def create(self, request, *args, **kwargs):
         serializer = PostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.check_object_permissions(request=request, obj=serializer.validated_data.get("page"))
+        page = serializer.validated_data.get("page")
+        self.check_object_permissions(request=request, obj=page)
         serializer.save()
+        email_for_followers.delay(page.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
@@ -114,14 +117,18 @@ class PostViewSet(
     @action(
         detail=True,
         methods=("post",),
-        permission_classes=(IsAuthenticated, ),
+        permission_classes=(IsAuthenticated,),
         url_path="reply",
     )
     def reply_to(self, request, pk=None):
         post = self.get_object()
         serializer = PostCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.check_object_permissions(request=request, obj=serializer.validated_data.get("page"))
+        page = serializer.validated_data.get("page")
+        self.check_object_permissions(
+            request=request, obj=page
+        )
         serializer.save()
+        email_for_followers.delay(page.id)
         PostService(post).add_reply(serializer.data["id"])
         return Response(serializer.data, status=status.HTTP_201_CREATED)

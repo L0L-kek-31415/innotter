@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0004_post_like_alter_page_image'),
+        ("main", "0004_post_like_alter_page_image"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='post',
-            name='like_count',
+            model_name="post",
+            name="like_count",
             field=models.IntegerField(default=0),
         ),
     ]
