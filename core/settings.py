@@ -154,13 +154,6 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
-REST_SESSION_LOGIN = False
-REST_USE_JWT = True
-JWT_AUTH_COOKIE = "jwt-access-token"
-JWT_AUTH_REFRESH_COOKIE = "jwt-refresh-token"
-JWT_AUTH_SECURE = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ["https://example.com"]
 
 AUTH_USER_MODEL = "user.User"
 
