@@ -47,17 +47,6 @@ class PageViewSet(
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
     }
 
-    def check_permissions(self, request):
-        handler = getattr(self, request.method.lower(), None)
-        if (
-            handler
-            and self.permission_classes_per_method
-            and self.permission_classes_per_method.get(handler.__name__)
-        ):
-            self.permission_classes = self.permission_classes_per_method.get(
-                handler.__name__
-            )
-        super().check_permissions(request)
 
     @action(
         detail=True,
