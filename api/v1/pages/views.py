@@ -47,6 +47,10 @@ class PageViewSet(
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
     }
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     @action(
         detail=True,
@@ -56,7 +60,6 @@ class PageViewSet(
     )
     def accept_follow_request(self, request, pk=None):
         page = self.get_object()
-        print(page.__dict__)
         serializer = PageFollowersSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(

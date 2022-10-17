@@ -125,9 +125,7 @@ class PostViewSet(
         serializer = PostCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         page = serializer.validated_data.get("page")
-        self.check_object_permissions(
-            request=request, obj=page
-        )
+        self.check_object_permissions(request=request, obj=page)
         serializer.save()
         email_for_followers.delay(page.id)
         PostService(post).add_reply(serializer.data["id"])
