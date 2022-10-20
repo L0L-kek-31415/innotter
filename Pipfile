@@ -12,12 +12,7 @@ djangorestframework-simplejwt = "*"
 django-filter = "*"
 django-rest-swagger = "*"
 celery = "*"
-fastapi = "*"
-uvicorn = "*"
-requests = "*"
 pika = "*"
-aioamqp = "*"
-aio-pika = "*"
 
 [dev-packages]
 black = "*"

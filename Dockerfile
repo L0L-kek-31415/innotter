@@ -17,4 +17,5 @@ RUN pipenv install --deploy --system --ignore-pipfile
 COPY . .
 
 RUN ["chmod", "+x", "./entrypoint.sh"]
-ENTRYPOINT ["./entrypoint.sh"]
+RUN ["chmod", "+x", "./celery-entrypoint.sh"]
+

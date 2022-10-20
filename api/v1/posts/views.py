@@ -48,7 +48,8 @@ class PostViewSet(
         .annotate(like_count=Count("like"))
     )
     serializer_class = PostDetailSerializer
-    serializer_action_classes = {"list": PrivatePostSerializer}
+    serializer_action_classes = {"list": PostDetailSerializer,
+                                 "retrieve": PostDetailSerializer}
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
