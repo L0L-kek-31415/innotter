@@ -1,10 +1,7 @@
-from django.urls import path, include
+from django.urls import path
 from django.contrib import admin
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework_swagger.views import get_swagger_view
-
-
-from api.v1.users.views import RegisterView
 
 
 schema_view = get_swagger_view(title="Innotter")

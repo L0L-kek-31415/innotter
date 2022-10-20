@@ -1,5 +1,7 @@
 from main.models import Page, Post
 
+from core.producer import publish
+
 
 class PostService:
     def __init__(self, post, user=None):
@@ -15,12 +17,14 @@ class PostService:
         if self.is_like_from_user_exist():
             return "This post already has your Like"
         else:
+            publish(body={"page_id": self.post.page.uuid, "method": "add_like"})
             self.post.like.add(self.user)
             return "Like has been added"
 
     def remove_like(self):
         if self.is_like_from_user_exist():
             self.post.like.remove(self.user)
+            publish(body={"page_id": self.post.page.uuid, "method": "del_like"})
             return "Like has been removed"
         else:
             return "This post does not have your Like"

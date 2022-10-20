@@ -48,7 +48,8 @@ class PostViewSet(
         .annotate(like_count=Count("like"))
     )
     serializer_class = PostDetailSerializer
-    serializer_action_classes = {"list": PrivatePostSerializer}
+    serializer_action_classes = {"list": PostDetailSerializer,
+                                 "retrieve": PostDetailSerializer}
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -125,9 +126,7 @@ class PostViewSet(
         serializer = PostCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         page = serializer.validated_data.get("page")
-        self.check_object_permissions(
-            request=request, obj=page
-        )
+        self.check_object_permissions(request=request, obj=page)
         serializer.save()
         email_for_followers.delay(page.id)
         PostService(post).add_reply(serializer.data["id"])

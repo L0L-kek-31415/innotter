@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from main.models import Page
+
+from core.producer import publish
 from user.permissions import IsModer, IsOwner
 from main.permissions import IsPageNotBlocked
 from api.v1.pages.serializers import (
@@ -47,6 +49,14 @@ class PageViewSet(
         "destroy": (IsAuthenticated, IsModer | IsOwner | IsAdminUser),
     }
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        publish(body={"page_id": serializer.data["uuid"], "method": "create"})
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
     @action(
         detail=True,
@@ -56,7 +66,6 @@ class PageViewSet(
     )
     def accept_follow_request(self, request, pk=None):
         page = self.get_object()
-        print(page.__dict__)
         serializer = PageFollowersSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(

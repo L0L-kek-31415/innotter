@@ -12,6 +12,7 @@ djangorestframework-simplejwt = "*"
 django-filter = "*"
 django-rest-swagger = "*"
 celery = "*"
+pika = "*"
 
 [dev-packages]
 black = "*"

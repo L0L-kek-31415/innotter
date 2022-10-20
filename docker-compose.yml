@@ -1,7 +1,7 @@
 version: '3.10'
 
 services:
-  web: &python
+  web:
     build: .
     env_file:
       - .env.dev
@@ -21,6 +21,15 @@ services:
       - 5433:5432
     env_file:
       - .env
+  microservice:
+    build: microservice
+    ports:
+      - 8001:8001
+    depends_on:
+      - web
+      - rabbitmq
+    env_file:
+      - .env.dev
   rabbitmq:
     image: rabbitmq:3.11.1-alpine
   celery_worker:
